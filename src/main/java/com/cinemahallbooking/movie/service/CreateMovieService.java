@@ -11,9 +11,8 @@ import com.cinemahallbooking.movie.model.CreateMovieModel;
 
 public interface CreateMovieService {
 	ResponseEntity<?> save(CreateMovieModel createMovie);
-
 	List<CreateMovieModel> getAllCreatedMovies();
-	
 	ResponseEntity<?> updateMovie(String movieId, CreateMovieModel updatedRequest);
 	ResponseEntity<?> updateMovie1(String movieId, Map<String, Object> updates);
+	void deleteMovie(String movieId);
 }
