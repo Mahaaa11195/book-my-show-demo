@@ -8,6 +8,5 @@ import com.cinemahallbooking.movie.model.LocationModel;
 
 public interface LocationsService {
 	ResponseEntity<?> save(LocationModel location);
-
 	List<LocationModel> getAllLocations();
 }

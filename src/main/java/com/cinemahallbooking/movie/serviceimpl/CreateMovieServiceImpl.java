@@ -50,10 +50,6 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 				.collect(Collectors.toList());
 		List<LocationModel> locations = locationRepository.findAllById(locationIds);
 
-		// Debugging - Check if locationIds are correct
-		System.out.println("Location IDs from request: " + locationIds);
-		System.out.println("Locations fetched: " + locations.stream().map(LocationModel::getLocationName).toList());
-
 		// Fetch all cinema halls
 		List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
 
@@ -132,122 +128,52 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 		return movies;
 	}
 
-//	public ResponseEntity<?> updateMovie(String movieId, CreateMovieModel updatedMovie) {
-//	    Optional<CreateMovieModel> existingMovieOpt = createMovieRepository.findById(movieId);
-//	    System.out.println("Checking movieId: " + movieId);
-//	    Optional<CreateMovieModel> movieCheck = createMovieRepository.findById(movieId);
-//	    System.out.println("Movie exists? " + movieCheck.isPresent());
-//	    if (existingMovieOpt.isEmpty()) {
-//	        return new ResponseEntity<>("Movie not found!", HttpStatus.NOT_FOUND);
-//	    }
-//
-//	    CreateMovieModel existingMovie = existingMovieOpt.get();
-//
-//	    // Update basic details
-//	    existingMovie.setMovieTitle(updatedMovie.getMovieTitle());
-//	    existingMovie.setGenre(updatedMovie.getGenre());
-//	    existingMovie.setImage(updatedMovie.getImage());
-//	    existingMovie.setReleaseDate(updatedMovie.getReleaseDate());
-//
-//	    // ✅ Auto-calculate releaseEndDate if not provided
-//	    if (updatedMovie.getReleaseDate() != null) {
-//	        existingMovie.setReleaseEndDate(updatedMovie.getReleaseDate().plusDays(6));
-//	    }
-//
-//	    // Update locations
-//	    List<String> locationIds = updatedMovie.getLocations().stream().map(LocationModel::getId).collect(Collectors.toList());
-//	    List<LocationModel> locations = locationRepository.findAllById(locationIds);
-//	    existingMovie.setLocations(locations);
-//
-//	    // Update cinema halls
-//	    List<String> cinemaHallIds = updatedMovie.getCinemaHalls().stream().map(CinemaHallModel::getId).collect(Collectors.toList());
-//	    List<CinemaHallModel> cinemaHalls = cinemaHallRepository.findAllById(cinemaHallIds);
-//
-//	    for (CinemaHallModel cinemaHall : cinemaHalls) {
-//	        updatedMovie.getCinemaHalls().stream()
-//	            .filter(reqCinema -> reqCinema.getId().equals(cinemaHall.getId()))
-//	            .findFirst()
-//	            .ifPresent(reqCinema -> {
-//	                // ✅ Preserve `availableSeats` if missing in request
-//	                reqCinema.getShowTimings().forEach(reqTiming -> {
-//	                    reqTiming.setAvailableSeats(
-//	                        cinemaHall.getShowTimings().stream()
-//	                            .filter(existingTiming -> existingTiming.getTime().equals(reqTiming.getTime()))
-//	                            .findFirst()
-//	                            .map(existingTiming -> existingTiming.getAvailableSeats() != null ? existingTiming.getAvailableSeats() : reqTiming.getAvailableSeats())
-//	                            .orElse(reqTiming.getAvailableSeats())  // Keep existing seats if available, else use the new request data
-//  // If no previous seats, keep it null
-//	                    );
-//	                });
-//
-//	                // ✅ Update show timings
-//	                cinemaHall.setShowTimings(reqCinema.getShowTimings());
-//	            });
-//	    }
-//
-//	    existingMovie.setCinemaHalls(cinemaHalls);
-//
-//	    // Save updated movie
-//	    createMovieRepository.save(existingMovie);
-//	    return new ResponseEntity<>(existingMovie, HttpStatus.OK);
-//	}
+
 	public ResponseEntity<?> updateMovie(String movieId, CreateMovieModel updatedMovie) {
-		Optional<CreateMovieModel> existingMovieOpt = createMovieRepository.findById(movieId);
-		if (existingMovieOpt.isEmpty()) {
-			return new ResponseEntity<>("Movie not found!", HttpStatus.NOT_FOUND);
-		}
+	    Optional<CreateMovieModel> existingMovieOpt = createMovieRepository.findById(movieId);
+	    if (existingMovieOpt.isEmpty()) {
+	        return new ResponseEntity<>("Movie not found!", HttpStatus.NOT_FOUND);
+	    }
 
-		CreateMovieModel existingMovie = existingMovieOpt.get();
+	    CreateMovieModel existingMovie = existingMovieOpt.get();
 
-		// Update basic details
-		existingMovie.setMovieTitle(updatedMovie.getMovieTitle());
-		existingMovie.setGenre(updatedMovie.getGenre());
-		existingMovie.setImage(updatedMovie.getImage());
-		existingMovie.setReleaseDate(updatedMovie.getReleaseDate());
+	    // Update basic movie details
+	    existingMovie.setMovieTitle(updatedMovie.getMovieTitle());
+	    existingMovie.setGenre(updatedMovie.getGenre());
+	    existingMovie.setImage(updatedMovie.getImage());
+	    existingMovie.setReleaseDate(updatedMovie.getReleaseDate());
 
-		if (updatedMovie.getReleaseDate() != null) {
-			existingMovie.setReleaseEndDate(updatedMovie.getReleaseDate().plusDays(6));
-		}
+	    if (updatedMovie.getReleaseDate() != null) {
+	        existingMovie.setReleaseEndDate(updatedMovie.getReleaseDate().plusDays(6));
+	    }
 
-		// ✅ Filter locations
-		List<String> locationIds = updatedMovie.getLocations().stream().map(LocationModel::getId)
-				.collect(Collectors.toList());
-		List<LocationModel> locations = locationRepository.findAllById(locationIds);
-		existingMovie.setLocations(locations);
+	    // ✅ Fetch updated locations
+	    List<String> locationIds = updatedMovie.getLocations().stream()
+	            .map(LocationModel::getId)
+	            .collect(Collectors.toList());
 
-		// ✅ Fetch all cinema halls and filter based on location names
-		List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
-		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
-				.filter(cinemaHall -> locations.stream().map(LocationModel::getLocationName)
-						.anyMatch(name -> name.equals(cinemaHall.getCinemaHallLocationName())))
-				.collect(Collectors.toList());
+	    List<LocationModel> locations = locationRepository.findAllById(locationIds);
 
-		// ✅ Update cinema halls based on filtered halls
-		for (CinemaHallModel cinemaHall : filteredCinemaHalls) {
-			updatedMovie.getCinemaHalls().stream().filter(reqCinema -> reqCinema.getId().equals(cinemaHall.getId()))
-					.findFirst().ifPresent(reqCinema -> {
-						reqCinema.getShowTimings().forEach(reqTiming -> {
-							reqTiming.setAvailableSeats(cinemaHall.getShowTimings().stream()
-									.filter(existingTiming -> existingTiming.getTime().equals(reqTiming.getTime()))
-									.findFirst()
-									.map(existingTiming -> existingTiming.getAvailableSeats() != null
-											? existingTiming.getAvailableSeats()
-											: reqTiming.getAvailableSeats())
-									.orElse(reqTiming.getAvailableSeats()));
-						});
+	    // ✅ Fetch and filter cinema halls based on selected locations
+	    List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
 
-						cinemaHall.setShowTimings(reqCinema.getShowTimings());
-					});
-		}
+	    List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
+	            .filter(cinemaHall -> locations.stream()
+	                    .anyMatch(location -> location.getLocationName().equalsIgnoreCase(cinemaHall.getCinemaHallLocationName())))
+	            .collect(Collectors.toList());
 
-		existingMovie.setCinemaHalls(filteredCinemaHalls);
-		createMovieRepository.save(existingMovie);
+	   
+	    CreateMovieModel newMovie = new CreateMovieModel(existingMovie, locations, filteredCinemaHalls);
+		createMovieRepository.save(newMovie);
+	    // ✅ Save the updated movie
 
-		return new ResponseEntity<>(existingMovie, HttpStatus.OK);
+
+	    return new ResponseEntity<>(newMovie, HttpStatus.OK);
 	}
 
+
+
 	@SuppressWarnings("unchecked")
-//	@PatchMapping("/movies/{movieId}")
 	public ResponseEntity<?> updateMovie1(String movieId, Map<String, Object> updates) {
 		Optional<CreateMovieModel> existingMovieOpt = createMovieRepository.findById(movieId);
 		if (existingMovieOpt.isEmpty()) {

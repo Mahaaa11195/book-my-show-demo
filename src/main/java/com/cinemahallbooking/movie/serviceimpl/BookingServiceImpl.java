@@ -16,9 +16,7 @@ import com.cinemahallbooking.movie.model.MovieSchedule;
 import com.cinemahallbooking.movie.model.SeatModel;
 import com.cinemahallbooking.movie.model.ShowTimingModel;
 import com.cinemahallbooking.movie.repository.BookingRepository;
-import com.cinemahallbooking.movie.repository.CinemaHallRepository;
 import com.cinemahallbooking.movie.repository.CreateMovieRepository;
-import com.cinemahallbooking.movie.repository.MovieRepository;
 import com.cinemahallbooking.movie.service.BookingService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,79 +29,10 @@ public class BookingServiceImpl implements BookingService {
 	private BookingRepository bookingRepository;
 
 	@Autowired
-	private MovieRepository movieRepository;
-
-	@Autowired
 	private CreateMovieRepository createMovieRepository;
 
-	@Autowired
-	private CinemaHallRepository cinemaHallRepository;
-
-//	@Override
-//	public BookingModel createBooking(BookingModel bookingModel) {
-//	    log.info("bookingModel: " + bookingModel);
-//	    LocalDateTime bookingTime = LocalDateTime.now();
-//	    bookingModel.setBookingTime(bookingTime);
-//
-//	    // Validate movie exists
-//	    Optional<MovieModel> movie = movieRepository.findByMovieTitle(bookingModel.getMovieTitle());
-//	    if (!movie.isPresent()) {
-//	        throw new RuntimeException("Movie not found");
-//	    }
-//
-//	    // Validate cinema hall exists
-//	    Optional<CinemaHallModel> cinemaHallOpt = cinemaHallRepository.findById(bookingModel.getCinemaHallId());
-//	    if (!cinemaHallOpt.isPresent()) {
-//	        throw new RuntimeException("Cinema Hall not found");
-//	    }
-//	    CinemaHallModel cinemaHall = cinemaHallOpt.get();
-//
-//	    // Find the matching show time
-//	    Optional<ShowTimingModel> showTimingOpt = cinemaHall.getShowTimings().stream()
-//	        .filter(showTiming -> showTiming.getTime().equals(bookingModel.getShowTime()))
-//	        .findFirst();
-//
-//	    if (!showTimingOpt.isPresent()) {
-//	        throw new RuntimeException("Show time not available");
-//	    }
-//
-//	    ShowTimingModel showTiming = showTimingOpt.get();
-//
-//	    // Validate seats exist & update them as booked
-//	    List<SeatModel> availableSeats = showTiming.getAvailableSeats();
-//	    int totalPrice = 0;
-//
-//	    for (SeatModel seat : bookingModel.getSelectedSeats()) {
-//	        Optional<SeatModel> seatOpt = availableSeats.stream()
-//	            .filter(s -> s.getSeatNumber().equals(seat.getSeatNumber()))
-//	            .findFirst();
-//
-//	        if (!seatOpt.isPresent()) {
-//	            throw new RuntimeException("Selected seat " + seat.getSeatNumber() + " is not available");
-//	        }
-//
-//	        SeatModel seatToBook = seatOpt.get();
-//
-//	        if (seatToBook.isBooked()) {
-//	            throw new RuntimeException("Seat " + seat.getSeatNumber() + " is already booked");
-//	        }
-//
-//	        seatToBook.setBooked(true);
-//	        totalPrice += seatToBook.getSeatPrice(); // Calculate total price
-//	    }
-//
-//	    // Save the updated cinema hall
-//	    cinemaHallRepository.save(cinemaHall);
-//
-//	    // Update total price in booking
-//	    bookingModel.setTotalPrice(totalPrice);
-//
-//	    // Save the booking
-//	    return bookingRepository.save(bookingModel);
-//	}
 	@Override
 	public BookingModel createBooking(BookingModel bookingModel) {
-		log.info("bookingModel: " + bookingModel);
 		LocalDateTime bookingTime = LocalDateTime.now();
 		bookingModel.setBookingTime(bookingTime);
 
@@ -175,9 +104,6 @@ public class BookingServiceImpl implements BookingService {
 			seatToBook.setBooked(true);
 			totalPrice += seatToBook.getSeatPrice(); // Calculate total price
 		}
-
-		// Save the updated cinema hall
-//		cinemaHallRepository.save(cinemaHall);
 		createMovieRepository.save(movie);
 
 		// Update total price in booking

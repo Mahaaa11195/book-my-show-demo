@@ -48,26 +48,73 @@ public class CreateMovieModel {
 	private List<CinemaHallModel> cinemaHalls = new ArrayList<>();
 
 	// Constructor to auto-calculate release end date (6 days after release)
-	public CreateMovieModel(CreateMovieModel request, List<LocationModel> locations,
-			List<CinemaHallModel> cinemaHalls) {
-		this.movieTitle = request.getMovieTitle();
-		this.genre = request.getGenre();
-		this.image = request.getImage();
+//	public CreateMovieModel(CreateMovieModel request, List<LocationModel> locations,
+//			List<CinemaHallModel> cinemaHalls) {
+//		this.movieTitle = request.getMovieTitle();
+//		this.genre = request.getGenre();
+//		this.image = request.getImage();
+//
+//		if (request.getReleaseDate() != null) {
+//			this.releaseDate = request.getReleaseDate();
+//			this.releaseEndDate = this.releaseDate.plusDays(6);
+//		} else {
+//			this.releaseDate = null;
+//			this.releaseEndDate = null;
+//		}
+//
+//		this.locations = locations != null ? locations : new ArrayList<>();
+//		this.cinemaHalls = cinemaHalls != null ? cinemaHalls : new ArrayList<>();
+//		this.movieSchedule = generateMovieSchedule();
+//
+//	}
+//
+//	// Method to generate schedule from releaseDate to releaseEndDate
+//	private List<MovieSchedule> generateMovieSchedule() {
+//		if (releaseDate == null || releaseEndDate == null) {
+//			return new ArrayList<>();
+//		}
+//
+//		return IntStream.rangeClosed(0, (int) releaseDate.until(releaseEndDate).getDays())
+//				.mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
+//				.collect(Collectors.toList());
+//	}
+	public CreateMovieModel(CreateMovieModel request, List<LocationModel> locations, List<CinemaHallModel> allCinemaHalls) {
+	    this.movieTitle = request.getMovieTitle();
+	    this.genre = request.getGenre();
+	    this.image = request.getImage();
 
-		if (request.getReleaseDate() != null) {
-			this.releaseDate = request.getReleaseDate();
-			this.releaseEndDate = this.releaseDate.plusDays(6);
-		} else {
-			this.releaseDate = null;
-			this.releaseEndDate = null;
-		}
+	    if (request.getReleaseDate() != null) {
+	        this.releaseDate = request.getReleaseDate();
+	        this.releaseEndDate = this.releaseDate.plusDays(6);
+	    } else {
+	        this.releaseDate = null;
+	        this.releaseEndDate = null;
+	    }
 
-		this.locations = locations != null ? locations : new ArrayList<>();
-		this.cinemaHalls = cinemaHalls != null ? cinemaHalls : new ArrayList<>();
-		this.movieSchedule = generateMovieSchedule();
+	    this.locations = locations != null ? new ArrayList<>(locations) : new ArrayList<>();
 
+	    // Debugging - Print all fetched cinema halls
+	    System.out.println("All Cinema Halls: ");
+	    allCinemaHalls.forEach(cinema -> System.out.println(cinema.getCinemaHallLocationName()));
+
+	    System.out.println("Locations:");
+	    locations.forEach(loc -> System.out.println(loc.getLocationName()));
+
+	    // Filter cinema halls based on location names
+	    List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
+	            .filter(cinemaHall -> locations.stream()
+	                    .map(LocationModel::getLocationName) // Compare with location name
+	                    .anyMatch(name -> name.equals(cinemaHall.getCinemaHallLocationName())))
+	            .collect(Collectors.toList());
+
+	    System.out.println("Filtered Cinema Halls Count: " + filteredCinemaHalls.size());
+
+	    // Assign filtered cinema halls
+	    this.cinemaHalls = new ArrayList<>(filteredCinemaHalls);
+
+	    // Generate movie schedule after setting locations and cinema halls
+	    this.movieSchedule = generateMovieSchedule();
 	}
-
 	// Method to generate schedule from releaseDate to releaseEndDate
 	private List<MovieSchedule> generateMovieSchedule() {
 		if (releaseDate == null || releaseEndDate == null) {
@@ -78,4 +125,5 @@ public class CreateMovieModel {
 				.mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
 				.collect(Collectors.toList());
 	}
+
 }

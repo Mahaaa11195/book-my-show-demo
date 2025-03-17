@@ -14,13 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MovieSchedule {
 
-    @Field("date")
-    private LocalDate date;
+	@Field("date")
+	private LocalDate date;
 
-    @Field("locations")
-    private List<LocationModel> locations;
+	@Field("locations")
+	private List<LocationModel> locations;
 
-    @Field("cinemaHalls")
-    private List<CinemaHallModel> cinemaHalls;
+	@Field("cinemaHalls")
+	private List<CinemaHallModel> cinemaHalls;
 }
-

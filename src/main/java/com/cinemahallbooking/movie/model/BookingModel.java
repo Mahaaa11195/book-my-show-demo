@@ -32,7 +32,7 @@ public class BookingModel {
 
 	@Field("cinema_hall_id")
 	private String cinemaHallId; // Selected cinema hall
-	
+
 	@Field("show_date")
 	private LocalDate showDate; // Selected show date
 
