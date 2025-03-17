@@ -21,30 +21,23 @@ public class CinemaHallServiceImpl implements CinemaHallService {
 
 	@Override
 	public ResponseEntity<?> save(CinemaHallModel cinemaHall) {
-	    Optional<CinemaHallModel> existingCinemaHall = cinemaHallRepository
-	            .findByCinemaHallName(cinemaHall.getCinemaHallName());
+		Optional<CinemaHallModel> existingCinemaHall = cinemaHallRepository
+				.findByCinemaHallName(cinemaHall.getCinemaHallName());
 
-	    if (existingCinemaHall.isPresent()) {
-	        return new ResponseEntity<>("CinemaHall with name '" + cinemaHall.getCinemaHallName() + "' already exists!",
-	                HttpStatus.CONFLICT);
-	    }
+		if (existingCinemaHall.isPresent()) {
+			return new ResponseEntity<>("CinemaHall with name '" + cinemaHall.getCinemaHallName() + "' already exists!",
+					HttpStatus.CONFLICT);
+		}
 
-	    // ✅ Generate seats for each showTiming
-	    for (ShowTimingModel show : cinemaHall.getShowTimings()) {
-	        show.setAvailableSeats(List.of(
-	            new SeatModel("A1", 200, false), 
-	            new SeatModel("A2", 200, false), 
-	            new SeatModel("A3", 150, false),
-	            new SeatModel("A4", 150, false), 
-	            new SeatModel("A5", 150, false)
-	        ));
-	    }
+		// Generate seats for each showTiming
+		for (ShowTimingModel show : cinemaHall.getShowTimings()) {
+			show.setAvailableSeats(List.of(new SeatModel("A1", 200), new SeatModel("A2", 200),
+					new SeatModel("A3", 150), new SeatModel("A4", 150), new SeatModel("A5", 150)));
+		}
 
-	    cinemaHallRepository.save(cinemaHall);
-	    return new ResponseEntity<>("CinemaHall saved successfully!", HttpStatus.CREATED);
+		cinemaHallRepository.save(cinemaHall);
+		return new ResponseEntity<>("CinemaHall saved successfully!", HttpStatus.CREATED);
 	}
-
-
 
 	@Override
 	public List<CinemaHallModel> getAllCinemaHall() {
