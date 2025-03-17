@@ -110,7 +110,7 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 	private List<SeatModel> generateSeats(int totalSeats) {
 		List<SeatModel> seats = new ArrayList<>();
 		for (int i = 1; i <= totalSeats; i++) {
-			seats.add(new SeatModel("A" + i, i <= 2 ? 200 : 150, false)); // First 2 seats: 200, others: 150
+			seats.add(new SeatModel("A" + i, i <= 2 ? 200 : 150)); // First 2 seats: 200, others: 150
 		}
 		return seats;
 	}

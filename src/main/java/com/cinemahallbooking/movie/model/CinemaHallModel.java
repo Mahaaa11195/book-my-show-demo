@@ -22,7 +22,7 @@ public class CinemaHallModel {
     private String cinemaHallName;
 
     @Field("show_timings")
-    private List<ShowTimingModel> showTimings = new ArrayList<>(); // ✅ Initialize here
+    private List<ShowTimingModel> showTimings = new ArrayList<>();
 
     @Field("total_seats")
     private int totalSeats = 5; 

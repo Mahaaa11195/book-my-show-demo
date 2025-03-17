@@ -1,6 +1,8 @@
 package com.cinemahallbooking.movie.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cinemahallbooking.movie.model.BookingModel;
 import com.cinemahallbooking.movie.service.BookingService;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
@@ -23,9 +27,18 @@ public class BookingController {
 	private BookingService bookingService;
 
 	@PostMapping("/create")
-	public ResponseEntity<BookingModel> createBooking(@RequestBody BookingModel bookingModel) {
-		return ResponseEntity.ok(bookingService.createBooking(bookingModel));
+	public ResponseEntity<Map<String, Object>> createBooking(@RequestBody BookingModel bookingModel) {
+//		 log.info("bookingModelcontroller", bookingModel);
+//		 System.out.print("bookingModel..." + bookingModel);
+	    BookingModel createdBooking = bookingService.createBooking(bookingModel);
+	   
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("status", "Booking successful");
+	    response.put("bookingDetails", createdBooking);
+	    
+	    return ResponseEntity.ok(response);
 	}
+
 
 	@GetMapping("/all")
 	public ResponseEntity<List<BookingModel>> getAllBookings() {

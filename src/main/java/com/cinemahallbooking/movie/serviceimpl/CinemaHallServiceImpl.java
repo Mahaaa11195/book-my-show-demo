@@ -31,8 +31,8 @@ public class CinemaHallServiceImpl implements CinemaHallService {
 
 		// Generate seats for each showTiming
 		for (ShowTimingModel show : cinemaHall.getShowTimings()) {
-			show.setAvailableSeats(List.of(new SeatModel("A1", 200, false), new SeatModel("A2", 200, false),
-					new SeatModel("A3", 150, false), new SeatModel("A4", 150, false), new SeatModel("A5", 150, false)));
+			show.setAvailableSeats(List.of(new SeatModel("A1", 200), new SeatModel("A2", 200),
+					new SeatModel("A3", 150), new SeatModel("A4", 150), new SeatModel("A5", 150)));
 		}
 
 		cinemaHallRepository.save(cinemaHall);

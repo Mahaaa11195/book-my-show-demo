@@ -20,7 +20,7 @@ public class MovieModel {
 	private String id;
 
 	@Field("movie_title")
-	private String movieTitle; 
+	private String movieTitle;
 
 	@Field("genre")
 	private String genre;

@@ -1,5 +1,6 @@
 package com.cinemahallbooking.movie.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,31 +17,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Document(collection = "bookings")
 public class BookingModel {
-    
-    @Id
-    private String id;
-    
-    @Field("user_id")
-    private String userId; // User who booked the movie
-    
-    @Field("movie")
-    private MovieModel movie; // Movie details
-    
-    @Field("cinema_hall")
-    private CinemaHallModel cinemaHall; // Selected cinema hall
-    
-    @Field("show_time")
-    private String showTime; // Selected show timing
-    
-    @Field("selected_seats")
-    private List<SeatModel> selectedSeats; // List of booked seats
-    
-    @Field("total_price")
-    private int totalPrice; // Total booking price
-    
-    @Field("booking_time")
-    private LocalDateTime bookingTime; // Timestamp of booking
-    
-    @Field("status")
-    private String status; // Status of booking (e.g., "Confirmed", "Cancelled")
+
+	@Id
+	private String id;
+
+//    @Field("user_id")
+//    private String userId; // User who booked the movie
+
+	@Field("location_id")
+	private String locationId; // Selected location
+
+	@Field("movie_title")
+	private String movieTitle; // select movie
+
+	@Field("cinema_hall_id")
+	private String cinemaHallId; // Selected cinema hall
+	
+	@Field("show_date")
+	private LocalDate showDate; // Selected show date
+
+	@Field("show_time")
+	private String showTime; // Selected show timing
+
+	@Field("selected_seats")
+	private List<SeatModel> selectedSeats; // List of booked seats
+
+	// no need to pass in the payload bcz added in code level
+
+	@Field("booking_time")
+	private LocalDateTime bookingTime; // Timestamp of booking
+
+	@Field("total_price")
+	private int totalPrice; // Total booking price
+
 }
