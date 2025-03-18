@@ -19,32 +19,37 @@ import com.cinemahallbooking.movie.model.CreateMovieModel;
 import com.cinemahallbooking.movie.service.CreateMovieService;
 
 @RestController
-@RequestMapping("/movie") // Changed to plural for RESTful convention
+@RequestMapping("/movie")
 public class CreateMovieController {
 
 	@Autowired
 	private CreateMovieService createMovieService;
 
+	// create a movie
 	@PostMapping("/create")
 	public ResponseEntity<?> addMovie(@RequestBody CreateMovieModel movie) {
 		return createMovieService.save(movie);
 	}
 
+	// get all movie list
 	@GetMapping("/all")
 	public List<CreateMovieModel> getAllMovies() {
 		return createMovieService.getAllCreatedMovies();
 	}
 
+	// update whole movie
 	@PutMapping("/update/{movieId}")
 	public ResponseEntity<?> updateMovie(@PathVariable String movieId, @RequestBody CreateMovieModel updatedMovie) {
 		return createMovieService.updateMovie(movieId, updatedMovie);
 	}
 
+	// update particular field in movie object
 	@PatchMapping("/{movieId}")
 	public ResponseEntity<?> updateMovie1(@PathVariable String movieId, @RequestBody Map<String, Object> updates) {
 		return createMovieService.updateMovie1(movieId, updates);
 	}
 
+	// delete movie
 	@DeleteMapping("/delete/{movieId}")
 	public void deleteMovie(@PathVariable String movieId) {
 		createMovieService.deleteMovie(movieId);

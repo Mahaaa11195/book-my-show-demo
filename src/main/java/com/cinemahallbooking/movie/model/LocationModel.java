@@ -13,10 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Document(collection = "locations")
 public class LocationModel {
+
 	@Id
 	private String id;
 
-	@Field("location_name") // eg banglore, pune
+	@Field("location_name")
 	private String locationName;
 
 	public String getId() {

@@ -21,6 +21,7 @@ public class CinemaHallServiceImpl implements CinemaHallService {
 
 	@Override
 	public ResponseEntity<?> save(CinemaHallModel cinemaHall) {
+		// validate cinemaHall exists
 		Optional<CinemaHallModel> existingCinemaHall = cinemaHallRepository
 				.findByCinemaHallName(cinemaHall.getCinemaHallName());
 
@@ -31,8 +32,8 @@ public class CinemaHallServiceImpl implements CinemaHallService {
 
 		// Generate seats for each showTiming
 		for (ShowTimingModel show : cinemaHall.getShowTimings()) {
-			show.setAvailableSeats(List.of(new SeatModel("A1", 200), new SeatModel("A2", 200),
-					new SeatModel("A3", 150), new SeatModel("A4", 150), new SeatModel("A5", 150)));
+			show.setAvailableSeats(List.of(new SeatModel("A1", 200), new SeatModel("A2", 200), new SeatModel("A3", 150),
+					new SeatModel("A4", 150), new SeatModel("A5", 150)));
 		}
 
 		cinemaHallRepository.save(cinemaHall);

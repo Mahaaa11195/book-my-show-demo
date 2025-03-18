@@ -25,29 +25,28 @@ public class BookingModel {
 //    private String userId; // User who booked the movie
 
 	@Field("location_id")
-	private String locationId; // Selected location
+	private String locationId;
 
 	@Field("movie_title")
-	private String movieTitle; // select movie
+	private String movieTitle;
 
 	@Field("cinema_hall_id")
-	private String cinemaHallId; // Selected cinema hall
+	private String cinemaHallId;
 
 	@Field("show_date")
-	private LocalDate showDate; // Selected show date
+	private LocalDate showDate;
 
 	@Field("show_time")
-	private String showTime; // Selected show timing
+	private String showTime;
 
 	@Field("selected_seats")
-	private List<SeatModel> selectedSeats; // List of booked seats
+	private List<SeatModel> selectedSeats;
 
 	// no need to pass in the payload bcz added in code level
 
 	@Field("booking_time")
-	private LocalDateTime bookingTime; // Timestamp of booking
+	private LocalDateTime bookingTime;
 
 	@Field("total_price")
-	private int totalPrice; // Total booking price
-
+	private int totalPrice;
 }

@@ -24,6 +24,7 @@ public class BookingController {
 	@Autowired
 	private BookingService bookingService;
 
+	// booking the movie
 	@PostMapping("/create")
 	public ResponseEntity<Map<String, Object>> createBooking(@RequestBody BookingModel bookingModel) {
 		BookingModel createdBooking = bookingService.createBooking(bookingModel);
@@ -35,16 +36,19 @@ public class BookingController {
 		return ResponseEntity.ok(response);
 	}
 
+	// get all bookings
 	@GetMapping("/all")
 	public ResponseEntity<List<BookingModel>> getAllBookings() {
 		return ResponseEntity.ok(bookingService.getAllBookings());
 	}
 
+	// get particular booking
 	@GetMapping("/{id}")
 	public ResponseEntity<BookingModel> getBookingById(@PathVariable String id) {
 		return ResponseEntity.ok(bookingService.getBookingById(id));
 	}
 
+	// cancel the booking
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> cancelBooking(@PathVariable String id) {
 		bookingService.cancelBooking(id);

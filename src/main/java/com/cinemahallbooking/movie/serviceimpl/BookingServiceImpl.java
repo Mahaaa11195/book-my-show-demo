@@ -42,20 +42,21 @@ public class BookingServiceImpl implements BookingService {
 			throw new RuntimeException("Movie not found");
 		}
 		CreateMovieModel movie = movieOpt.get();
-		System.out.println("movie" + movie);
+		log.info("movie" + movie);
+
 		// Fetch MovieSchedule for the selected date
 		@SuppressWarnings("unlikely-arg-type")
 		LocalDate showDate = bookingModel.getShowDate();
 		Optional<MovieSchedule> scheduleOpt = movie.getMovieSchedule().stream()
 				.peek(schedule -> System.out.println("Schedule Date: " + schedule.getDate()))
-				.filter(schedule -> schedule.getDate().isEqual(showDate)) // Use isEqual() instead of equals() for
-																			// LocalDate
-				.findFirst();
+				.filter(schedule -> schedule.getDate().isEqual(showDate)).findFirst();
 
 		if (!scheduleOpt.isPresent()) {
 			throw new RuntimeException("No schedule found for the selected date");
 		}
+
 		MovieSchedule movieSchedule = scheduleOpt.get();
+
 		// Validate location exists in the schedule
 		Optional<LocationModel> locationOpt = movieSchedule.getLocations().stream()
 				.filter(loc -> loc.getId().equals(bookingModel.getLocationId())).findFirst();

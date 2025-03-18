@@ -19,11 +19,13 @@ public class CinemaHallController {
 	@Autowired
 	private CinemaHallService cinemaHallService;
 
+	// create cinema hall
 	@PostMapping("/save")
 	public ResponseEntity<?> addCinemaHall(@RequestBody CinemaHallModel cinemaHall) {
 		return cinemaHallService.save(cinemaHall);
 	}
 
+	// get cinema hall list
 	@GetMapping("/get/all")
 	public List<CinemaHallModel> getAllCinemaHall() {
 		return cinemaHallService.getAllCinemaHall();

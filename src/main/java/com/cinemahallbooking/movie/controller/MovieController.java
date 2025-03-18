@@ -19,11 +19,13 @@ public class MovieController {
 	@Autowired
 	private MovieService movieService;
 
+	// save movie
 	@PostMapping("/save")
 	public ResponseEntity<?> addMovie(@RequestBody MovieModel movie) {
 		return movieService.save(movie);
 	}
 
+	// get all movies
 	@GetMapping("/get/all")
 	public List<MovieModel> getAllMovies() {
 		return movieService.getAllMovies();

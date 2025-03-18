@@ -8,5 +8,6 @@ import com.cinemahallbooking.movie.model.CinemaHallModel;
 
 public interface CinemaHallService {
 	ResponseEntity<?> save(CinemaHallModel cinemaHall);
+
 	List<CinemaHallModel> getAllCinemaHall();
 }

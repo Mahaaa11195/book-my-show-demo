@@ -19,11 +19,13 @@ public class LocationsController {
 	@Autowired
 	private LocationsService locationService;
 
+	// create location
 	@PostMapping("/save")
 	public ResponseEntity<?> addLocation(@RequestBody LocationModel location) {
 		return locationService.save(location);
 	}
 
+	// get all location list
 	@GetMapping("/get/all")
 	public List<LocationModel> getAllLocations() {
 		return locationService.getAllLocations();

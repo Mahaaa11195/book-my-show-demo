@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor // ✅ Add this annotation to generate a no-arg constructor
+@NoArgsConstructor
 public class SeatModel {
 
 	@Field("seat_number")

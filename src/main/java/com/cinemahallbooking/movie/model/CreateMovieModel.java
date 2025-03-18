@@ -13,7 +13,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,50 +43,41 @@ public class CreateMovieModel {
 	@Field("movie_schedule")
 	private List<MovieSchedule> movieSchedule = new ArrayList<>();
 
-	@Field("locations") // Store full location objects
+	@Field("locations")
 	private List<LocationModel> locations = new ArrayList<>();
 
-	@Field("cinemaHalls") // Store full cinema hall objects
+	@Field("cinemaHalls")
 	private List<CinemaHallModel> cinemaHalls = new ArrayList<>();
 
-	
-	public CreateMovieModel(CreateMovieModel request, List<LocationModel> locations, List<CinemaHallModel> allCinemaHalls) {
-	    this.movieTitle = request.getMovieTitle();
-	    this.genre = request.getGenre();
-	    this.image = request.getImage();
+	public CreateMovieModel(CreateMovieModel request, List<LocationModel> locations,
+			List<CinemaHallModel> allCinemaHalls) {
+		this.movieTitle = request.getMovieTitle();
+		this.genre = request.getGenre();
+		this.image = request.getImage();
 
-	    if (request.getReleaseDate() != null) {
-	        this.releaseDate = request.getReleaseDate();
-	        this.releaseEndDate = this.releaseDate.plusDays(6);
-	    } else {
-	        this.releaseDate = null;
-	        this.releaseEndDate = null;
-	    }
+		if (request.getReleaseDate() != null) {
+			this.releaseDate = request.getReleaseDate();
+			this.releaseEndDate = this.releaseDate.plusDays(6);
+		} else {
+			this.releaseDate = null;
+			this.releaseEndDate = null;
+		}
 
-	    this.locations = locations != null ? new ArrayList<>(locations) : new ArrayList<>();
+		this.locations = locations != null ? new ArrayList<>(locations) : new ArrayList<>();
 
-	    // Debugging - Print all fetched cinema halls
-	    System.out.println("All Cinema Halls: ");
-	    allCinemaHalls.forEach(cinema -> System.out.println(cinema.getCinemaHallLocationName()));
+		// Filter cinema halls based on location names
+		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
+				.filter(cinemaHall -> locations.stream().map(LocationModel::getLocationName)
+						.anyMatch(name -> name.equals(cinemaHall.getCinemaHallLocationName())))
+				.collect(Collectors.toList());
 
-	    System.out.println("Locations:");
-	    locations.forEach(loc -> System.out.println(loc.getLocationName()));
+		log.info("Filtered Cinema Halls Count: " + filteredCinemaHalls.size());
 
-	    // Filter cinema halls based on location names
-	    List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
-	            .filter(cinemaHall -> locations.stream()
-	                    .map(LocationModel::getLocationName) // Compare with location name
-	                    .anyMatch(name -> name.equals(cinemaHall.getCinemaHallLocationName())))
-	            .collect(Collectors.toList());
+		this.cinemaHalls = new ArrayList<>(filteredCinemaHalls);
 
-	    System.out.println("Filtered Cinema Halls Count: " + filteredCinemaHalls.size());
-
-	    // Assign filtered cinema halls
-	    this.cinemaHalls = new ArrayList<>(filteredCinemaHalls);
-
-	    // Generate movie schedule after setting locations and cinema halls
-	    this.movieSchedule = generateMovieSchedule();
+		this.movieSchedule = generateMovieSchedule();
 	}
+
 	// Method to generate schedule from releaseDate to releaseEndDate
 	private List<MovieSchedule> generateMovieSchedule() {
 		if (releaseDate == null || releaseEndDate == null) {
@@ -95,18 +88,17 @@ public class CreateMovieModel {
 				.mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
 				.collect(Collectors.toList());
 	}
-	
+
 	// Method to regenerate the movie schedule after updates
 	public void updateMovieSchedule() {
-	    if (this.releaseDate == null || this.releaseEndDate == null) {
-	        this.movieSchedule = new ArrayList<>();
-	        return;
-	    }
+		if (this.releaseDate == null || this.releaseEndDate == null) {
+			this.movieSchedule = new ArrayList<>();
+			return;
+		}
 
-	    this.movieSchedule = IntStream.rangeClosed(0, (int) releaseDate.until(releaseEndDate).getDays())
-	            .mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
-	            .collect(Collectors.toList());
+		this.movieSchedule = IntStream.rangeClosed(0, (int) releaseDate.until(releaseEndDate).getDays())
+				.mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
+				.collect(Collectors.toList());
 	}
-
 
 }
