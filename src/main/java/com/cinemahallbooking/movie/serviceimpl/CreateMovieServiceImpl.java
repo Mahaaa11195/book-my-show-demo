@@ -137,7 +137,7 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 
 	    CreateMovieModel existingMovie = existingMovieOpt.get();
 
-	    // Update basic movie details
+	    // ✅ Update basic movie details
 	    existingMovie.setMovieTitle(updatedMovie.getMovieTitle());
 	    existingMovie.setGenre(updatedMovie.getGenre());
 	    existingMovie.setImage(updatedMovie.getImage());
@@ -153,6 +153,7 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 	            .collect(Collectors.toList());
 
 	    List<LocationModel> locations = locationRepository.findAllById(locationIds);
+	    existingMovie.setLocations(locations);
 
 	    // ✅ Fetch and filter cinema halls based on selected locations
 	    List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
@@ -162,14 +163,17 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 	                    .anyMatch(location -> location.getLocationName().equalsIgnoreCase(cinemaHall.getCinemaHallLocationName())))
 	            .collect(Collectors.toList());
 
-	   
-	    CreateMovieModel newMovie = new CreateMovieModel(existingMovie, locations, filteredCinemaHalls);
-		createMovieRepository.save(newMovie);
+	    existingMovie.setCinemaHalls(filteredCinemaHalls);
+
+	    // ✅ Regenerate Movie Schedule after updates
+	    existingMovie.updateMovieSchedule();
+
 	    // ✅ Save the updated movie
+	    createMovieRepository.save(existingMovie);
 
-
-	    return new ResponseEntity<>(newMovie, HttpStatus.OK);
+	    return new ResponseEntity<>(existingMovie, HttpStatus.OK);
 	}
+
 
 
 

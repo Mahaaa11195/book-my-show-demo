@@ -47,37 +47,7 @@ public class CreateMovieModel {
 	@Field("cinemaHalls") // Store full cinema hall objects
 	private List<CinemaHallModel> cinemaHalls = new ArrayList<>();
 
-	// Constructor to auto-calculate release end date (6 days after release)
-//	public CreateMovieModel(CreateMovieModel request, List<LocationModel> locations,
-//			List<CinemaHallModel> cinemaHalls) {
-//		this.movieTitle = request.getMovieTitle();
-//		this.genre = request.getGenre();
-//		this.image = request.getImage();
-//
-//		if (request.getReleaseDate() != null) {
-//			this.releaseDate = request.getReleaseDate();
-//			this.releaseEndDate = this.releaseDate.plusDays(6);
-//		} else {
-//			this.releaseDate = null;
-//			this.releaseEndDate = null;
-//		}
-//
-//		this.locations = locations != null ? locations : new ArrayList<>();
-//		this.cinemaHalls = cinemaHalls != null ? cinemaHalls : new ArrayList<>();
-//		this.movieSchedule = generateMovieSchedule();
-//
-//	}
-//
-//	// Method to generate schedule from releaseDate to releaseEndDate
-//	private List<MovieSchedule> generateMovieSchedule() {
-//		if (releaseDate == null || releaseEndDate == null) {
-//			return new ArrayList<>();
-//		}
-//
-//		return IntStream.rangeClosed(0, (int) releaseDate.until(releaseEndDate).getDays())
-//				.mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
-//				.collect(Collectors.toList());
-//	}
+	
 	public CreateMovieModel(CreateMovieModel request, List<LocationModel> locations, List<CinemaHallModel> allCinemaHalls) {
 	    this.movieTitle = request.getMovieTitle();
 	    this.genre = request.getGenre();
@@ -125,5 +95,18 @@ public class CreateMovieModel {
 				.mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
 				.collect(Collectors.toList());
 	}
+	
+	// Method to regenerate the movie schedule after updates
+	public void updateMovieSchedule() {
+	    if (this.releaseDate == null || this.releaseEndDate == null) {
+	        this.movieSchedule = new ArrayList<>();
+	        return;
+	    }
+
+	    this.movieSchedule = IntStream.rangeClosed(0, (int) releaseDate.until(releaseEndDate).getDays())
+	            .mapToObj(i -> new MovieSchedule(releaseDate.plusDays(i), locations, cinemaHalls))
+	            .collect(Collectors.toList());
+	}
+
 
 }
