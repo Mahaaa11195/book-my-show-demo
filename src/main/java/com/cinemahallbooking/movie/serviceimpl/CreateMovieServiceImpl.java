@@ -353,9 +353,9 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 	}
 
 	@Override
-	public void deleteMovie(String movieId) {
+	public ResponseEntity<?> deleteMovie(String movieId) {
 		createMovieRepository.deleteById(movieId);
-
+		return new ResponseEntity<>("Movie Deleted Successfully", HttpStatus.OK);
 	}
 
 }
