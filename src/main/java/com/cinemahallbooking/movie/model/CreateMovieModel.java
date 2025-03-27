@@ -66,14 +66,14 @@ public class CreateMovieModel {
 		this.locations = locations != null ? new ArrayList<>(locations) : new ArrayList<>();
 
 		// Filter cinema halls based on location names
-		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
-				.filter(cinemaHall -> locations.stream().map(LocationModel::getLocationName)
-						.anyMatch(name -> name.equals(cinemaHall.getCinemaHallLocationName())))
-				.collect(Collectors.toList());
+//		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
+//				.filter(cinemaHall -> locations.stream().map(LocationModel::getLocationName)
+//						.anyMatch(name -> name.equals(cinemaHall.getCinemaHallLocationName())))
+//				.collect(Collectors.toList());
+//
+//		log.info("Filtered Cinema Halls Count: " + filteredCinemaHalls.size());
 
-		log.info("Filtered Cinema Halls Count: " + filteredCinemaHalls.size());
-
-		this.cinemaHalls = new ArrayList<>(filteredCinemaHalls);
+		this.cinemaHalls = new ArrayList<>(allCinemaHalls);
 
 		this.movieSchedule = generateMovieSchedule();
 	}
