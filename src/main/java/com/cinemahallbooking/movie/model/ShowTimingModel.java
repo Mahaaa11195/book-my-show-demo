@@ -18,4 +18,5 @@ public class ShowTimingModel {
 
 	@Field("available_seats")
 	private List<SeatModel> availableSeats;
+	
 }

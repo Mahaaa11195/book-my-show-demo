@@ -50,30 +50,31 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 				.collect(Collectors.toList());
 		List<LocationModel> locations = locationRepository.findAllById(locationIds);
 
-		// Fetch cinemalHalls based on the provided cinemaHall IDs
+		// Fetch cinemaHalls based on the provided cinemaHall IDs
 		List<String> cinemaHallIds = request.getCinemaHalls().stream().map(CinemaHallModel::getId)
 				.collect(Collectors.toList());
 		List<CinemaHallModel> cinemaHalls = cinemaHallRepository.findAllById(cinemaHallIds);
 
-//		// Fetch all cinema halls
-//		List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
-//
-//		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
-//				.filter(cinemaHall -> locations.stream().map(LocationModel::getLocationName).anyMatch(name -> {
-//					boolean match = name.equals(cinemaHall.getCinemaHallLocationName());
-//					if (match) {
-//						log.info("Matched: " + cinemaHall.getCinemaHallLocationName());
-//					}
-//					return match;
-//				})).collect(Collectors.toList());
+		// Check if a movie event already exists with the same releaseDate, location,
+		// cinemaHall, and showTiming
+		for (CinemaHallModel reqCinemaHall : request.getCinemaHalls()) {
+			for (ShowTimingModel reqShowTime : reqCinemaHall.getShowTimings()) {
+				boolean isDuplicate = createMovieRepository
+						.existsByReleaseDateAndLocations_IdAndCinemaHalls_IdAndCinemaHalls_ShowTimings_Time(
+								request.getReleaseDate(), locationIds, reqCinemaHall.getId(), reqShowTime.getTime());
 
-//		log.info("Filtered Cinema Halls Count: " + filteredCinemaHalls.size());
+				if (isDuplicate) {
+					return new ResponseEntity<>(
+							"A movie event already exists for this date, location, cinema hall, and show timing!",
+							HttpStatus.CONFLICT);
+				}
+			}
+		}
 
 		// Generate seats for valid cinema halls
 		for (CinemaHallModel cinemaHall : cinemaHalls) {
 			request.getCinemaHalls().stream().filter(reqCinema -> reqCinema.getId().equals(cinemaHall.getId()))
 					.forEach(reqCinema -> {
-						System.out.println("reqCinema" + reqCinema);
 						reqCinema.getShowTimings().forEach(showTiming -> {
 							if (showTiming.getAvailableSeats() == null) { // Ensure seats are created for all showtimes
 								List<SeatModel> seats = generateSeats(cinemaHall.getTotalSeats());
@@ -90,6 +91,60 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 
 		return new ResponseEntity<>(newMovie, HttpStatus.CREATED);
 	}
+
+//	public ResponseEntity<?> save(CreateMovieModel request) {
+//		// Check if a movie with the same title already exists
+//		Optional<CreateMovieModel> existingMovie = createMovieRepository.findByMovieTitle(request.getMovieTitle());
+//		if (existingMovie.isPresent()) {
+//			return new ResponseEntity<>("Movie with title '" + request.getMovieTitle() + "' already exists!",
+//					HttpStatus.CONFLICT);
+//		}
+//
+//		// Fetch locations based on the provided location IDs
+//		List<String> locationIds = request.getLocations().stream().map(LocationModel::getId)
+//				.collect(Collectors.toList());
+//		List<LocationModel> locations = locationRepository.findAllById(locationIds);
+//
+//		// Fetch cinemalHalls based on the provided cinemaHall IDs
+//		List<String> cinemaHallIds = request.getCinemaHalls().stream().map(CinemaHallModel::getId)
+//				.collect(Collectors.toList());
+//		List<CinemaHallModel> cinemaHalls = cinemaHallRepository.findAllById(cinemaHallIds);
+//
+////		// Fetch all cinema halls
+////		List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
+////
+////		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
+////				.filter(cinemaHall -> locations.stream().map(LocationModel::getLocationName).anyMatch(name -> {
+////					boolean match = name.equals(cinemaHall.getCinemaHallLocationName());
+////					if (match) {
+////						log.info("Matched: " + cinemaHall.getCinemaHallLocationName());
+////					}
+////					return match;
+////				})).collect(Collectors.toList());
+//
+////		log.info("Filtered Cinema Halls Count: " + filteredCinemaHalls.size());
+//
+//		// Generate seats for valid cinema halls
+//		for (CinemaHallModel cinemaHall : cinemaHalls) {
+//			request.getCinemaHalls().stream().filter(reqCinema -> reqCinema.getId().equals(cinemaHall.getId()))
+//					.forEach(reqCinema -> {
+//						System.out.println("reqCinema" + reqCinema);
+//						reqCinema.getShowTimings().forEach(showTiming -> {
+//							if (showTiming.getAvailableSeats() == null) { // Ensure seats are created for all showtimes
+//								List<SeatModel> seats = generateSeats(cinemaHall.getTotalSeats());
+//								showTiming.setAvailableSeats(seats);
+//							}
+//						});
+//						cinemaHall.setShowTimings(reqCinema.getShowTimings());
+//					});
+//		}
+//
+//		// Save the new movie with the filtered cinema halls
+//		CreateMovieModel newMovie = new CreateMovieModel(request, locations, cinemaHalls);
+//		createMovieRepository.save(newMovie);
+//
+//		return new ResponseEntity<>(newMovie, HttpStatus.CREATED);
+//	}
 
 	/**
 	 * Generates a list of seats based on total seats.
@@ -143,24 +198,42 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 		List<LocationModel> locations = locationRepository.findAllById(locationIds);
 		existingMovie.setLocations(locations);
 
-		// Fetch and filter cinema halls based on selected locations
-		List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
-
-		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
-				.filter(cinemaHall -> locations.stream()
-						.anyMatch(location -> location.getLocationName()
-								.equalsIgnoreCase(cinemaHall.getCinemaHallLocationName())))
+//		// Fetch and filter cinema halls based on selected locations
+//		List<CinemaHallModel> allCinemaHalls = cinemaHallRepository.findAll();
+//
+//		List<CinemaHallModel> filteredCinemaHalls = allCinemaHalls.stream()
+//				.filter(cinemaHall -> locations.stream()
+//						.anyMatch(location -> location.getLocationName()
+//								.equalsIgnoreCase(cinemaHall.getCinemaHallLocationName())))
+//				.collect(Collectors.toList());
+		// Fetch updated cinemahalls
+		List<String> cinemaHallsIds = updatedMovie.getCinemaHalls().stream().map(CinemaHallModel::getId)
 				.collect(Collectors.toList());
 
-		existingMovie.setCinemaHalls(filteredCinemaHalls);
+		List<CinemaHallModel> cinemaHalls = cinemaHallRepository.findAllById(cinemaHallsIds);
+		existingMovie.setCinemaHalls(cinemaHalls);
+		for (CinemaHallModel cinemaHall : cinemaHalls) {
+			updatedMovie.getCinemaHalls().stream().filter(reqCinema -> reqCinema.getId().equals(cinemaHall.getId()))
+					.forEach(reqCinema -> {
+						reqCinema.getShowTimings().forEach(showTiming -> {
+							if (showTiming.getAvailableSeats() == null) { // Ensure seats are created for all showtimes
+								List<SeatModel> seats = generateSeats(cinemaHall.getTotalSeats());
+								showTiming.setAvailableSeats(seats);
+							}
+						});
+						cinemaHall.setShowTimings(reqCinema.getShowTimings());
+					});
+		}
 
+		// Save the new movie with the filtered cinema halls
+		CreateMovieModel updatedExistingMovie = new CreateMovieModel(updatedMovie, locations, cinemaHalls);
 		// Regenerate Movie Schedule after updates
-		existingMovie.updateMovieSchedule();
+		updatedExistingMovie.updateMovieSchedule();
 
 		// Save the updated movie
-		createMovieRepository.save(existingMovie);
+		createMovieRepository.save(updatedExistingMovie);
 
-		return new ResponseEntity<>(existingMovie, HttpStatus.OK);
+		return new ResponseEntity<>(updatedExistingMovie, HttpStatus.OK);
 	}
 
 	@SuppressWarnings("unchecked")
