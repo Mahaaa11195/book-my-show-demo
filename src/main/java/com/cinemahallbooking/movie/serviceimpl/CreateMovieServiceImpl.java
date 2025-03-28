@@ -199,9 +199,9 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 			case "genre":
 				existingMovie.setGenre((String) value);
 				break;
-			case "image":
-				existingMovie.setImage((String) value);
-				break;
+//			case "image":
+//				existingMovie.setImage((String) value);
+//				break;
 			case "releaseDate":
 				LocalDate newDate = LocalDate.parse((String) value);
 				existingMovie.setReleaseDate(newDate);
