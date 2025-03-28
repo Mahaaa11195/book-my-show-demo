@@ -29,7 +29,7 @@ public class MovieModel {
 	private LocalDateTime date;
 
 	@Field("image")
-	private String image;
+	private byte[] image;
 
 	@Field("release_date")
 	private String releaseDate;

@@ -30,28 +30,27 @@ public class CreateMovieController {
 	private CreateMovieService createMovieService;
 
 	// create a movie
-		@PostMapping("/create")
-		public ResponseEntity<?> addMovie(
-		        @RequestPart("movie") String movieJson,
-		        @RequestPart(value = "image", required = false) MultipartFile image) {
+	@PostMapping("/create")
+	public ResponseEntity<?> addMovie(@RequestPart("movie") String movieJson,
+			@RequestPart(value = "image", required = false) MultipartFile image) {
 
-		    try {
-		        // Create an ObjectMapper with JavaTimeModule registered
-		        ObjectMapper objectMapper = new ObjectMapper();
-		        objectMapper.registerModule(new JavaTimeModule()); // Enable LocalDate support
+		try {
+			// Create an ObjectMapper with JavaTimeModule registered
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.registerModule(new JavaTimeModule()); // Enable LocalDate support
 
-		        // Convert JSON String to Java Object
-		        CreateMovieModel movie = objectMapper.readValue(movieJson, CreateMovieModel.class);
+			// Convert JSON String to Java Object
+			CreateMovieModel movie = objectMapper.readValue(movieJson, CreateMovieModel.class);
 
-		        if (image != null) {
-		            movie.setImage(image.getBytes()); // Convert image to byte array
-		        }
+			if (image != null) {
+				movie.setImage(image.getBytes()); // Convert image to byte array
+			}
 
-		        return createMovieService.save(movie);
-		    } catch (Exception e) {
-		        return ResponseEntity.badRequest().body("Error processing request: " + e.getMessage());
-		    }
+			return createMovieService.save(movie);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Error processing request: " + e.getMessage());
 		}
+	}
 
 	// get all movie list
 	@GetMapping("/all")
@@ -73,7 +72,7 @@ public class CreateMovieController {
 
 	// delete movie
 	@DeleteMapping("/delete/{movieId}")
-	public void deleteMovie(@PathVariable String movieId) {
-		createMovieService.deleteMovie(movieId);
+	public ResponseEntity<?> deleteMovie(@PathVariable String movieId) {
+		return createMovieService.deleteMovie(movieId);
 	}
 }

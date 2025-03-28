@@ -16,5 +16,5 @@ public interface CreateMovieService {
 
 	ResponseEntity<?> updateMovie1(String movieId, Map<String, Object> updates);
 
-	void deleteMovie(String movieId);
+	ResponseEntity<?> deleteMovie(String movieId);
 }

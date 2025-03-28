@@ -165,14 +165,14 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 		}
 
 		// Save the new movie with the filtered cinema halls
-		CreateMovieModel updatedExistingMovie = new CreateMovieModel(updatedMovie, locations, cinemaHalls);
+//		CreateMovieModel updatedExistingMovie = new CreateMovieModel(updatedMovie, locations, cinemaHalls);
 		// Regenerate Movie Schedule after updates
-		updatedExistingMovie.updateMovieSchedule();
+		existingMovie.updateMovieSchedule();
 
 		// Save the updated movie
-		createMovieRepository.save(updatedExistingMovie);
+		createMovieRepository.save(existingMovie);
 
-		return new ResponseEntity<>(updatedExistingMovie, HttpStatus.OK);
+		return new ResponseEntity<>(existingMovie, HttpStatus.OK);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -292,9 +292,9 @@ public class CreateMovieServiceImpl implements CreateMovieService {
 	}
 
 	@Override
-	public void deleteMovie(String movieId) {
+	public ResponseEntity<?> deleteMovie(String movieId) {
 		createMovieRepository.deleteById(movieId);
-
+		return new ResponseEntity<>("Movie Deleted Successfully", HttpStatus.OK);
 	}
 
 }
