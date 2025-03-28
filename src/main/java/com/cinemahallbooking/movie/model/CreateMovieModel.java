@@ -32,7 +32,7 @@ public class CreateMovieModel {
 	private String genre;
 
 	@Field("image")
-	private String image;
+	private byte[] image;
 
 	@Field("release_date")
 	private LocalDate releaseDate;
