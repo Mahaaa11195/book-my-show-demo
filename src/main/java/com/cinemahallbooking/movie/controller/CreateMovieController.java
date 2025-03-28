@@ -30,7 +30,6 @@ public class CreateMovieController {
 	private CreateMovieService createMovieService;
 
 	// create a movie
-	// create a movie
 		@PostMapping("/create")
 		public ResponseEntity<?> addMovie(
 		        @RequestPart("movie") String movieJson,
